@@ -1,0 +1,36 @@
+server:
+  port: 18082
+
+spring:
+  application:
+    name: mm-aichatboot
+  ai:
+    openai:
+      # 任何 OpenAI 兼容网关都可以：DeepSeek、OpenAI、Ollama、OpenCode Go ...
+      # 注意：base-url 填到 /v1 之前，Spring AI 会自动拼接 /v1/chat/completions
+      base-url: ${AI_BASE_URL:https://api.deepseek.com}
+      api-key: ${AI_API_KEY:sk-placeholder}
+      chat:
+        options:
+          model: ${AI_MODEL:deepseek-chat}
+          temperature: 0.7
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+        server-addr: 127.0.0.1:8848
+    service-registry:
+      auto-registration:
+        enabled: false
+
+app:
+  chat:
+    system-prompt: "你是一个面向 Java 后端的 AI 学习助手，回答要简洁、准确，必要时给出可运行的代码示例。"
+    # 每个会话最多保留多少条历史消息（user + assistant 各算一条）
+    max-history: 20
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

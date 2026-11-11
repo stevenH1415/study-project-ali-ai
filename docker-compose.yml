@@ -1,0 +1,44 @@
+services:
+  # Nacos 注册中心 / 配置中心（可选）
+  nacos:
+    image: nacos/nacos-server:v2.3.2
+    container_name: springali-nacos
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: "false"
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+
+  # RocketMQ NameServer（MQ 学习用）
+  rmqnamesrv:
+    image: apache/rocketmq:5.3.1
+    container_name: springali-rmqnamesrv
+    command: sh mqnamesrv
+    ports:
+      - "9876:9876"
+
+  # RocketMQ Broker
+  rmqbroker:
+    image: apache/rocketmq:5.3.1
+    container_name: springali-rmqbroker
+    command: sh mqbroker -n rmqnamesrv:9876 -c /home/rocketmq/conf/broker.conf
+    depends_on:
+      - rmqnamesrv
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+    volumes:
+      - ./docker/rocketmq/broker.conf:/home/rocketmq/conf/broker.conf
+
+  # RocketMQ 控制台
+  rmqdashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: springali-rmqdashboard
+    depends_on:
+      - rmqnamesrv
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rmqnamesrv:9876"
+    ports:
+      - "8180:8080"

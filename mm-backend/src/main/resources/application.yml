@@ -1,0 +1,28 @@
+server:
+  port: 18083
+
+spring:
+  application:
+    name: mm-backend
+  datasource:
+    url: ${PG_URL:jdbc:postgresql://localhost:5432/springali}
+    username: ${PG_USER:postgres}
+    password: ${PG_PASSWORD:826118}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 5000
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+        server-addr: 127.0.0.1:8848
+    service-registry:
+      auto-registration:
+        enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
